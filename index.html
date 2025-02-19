@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kcalculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            text-align: center;
+            margin: auto;
+            width: 50%;
+            margin-top: 20vh;
+            background: var(--box-color); /* Light grey */
+        }
+        .fun-fact {
+            font-size: smaller;
+            color: black; /* Black */
+        }
+        .warning {
+            color: #FF6347; /* Soft red color */
+        }
+        .meal-plan {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px;
+        }
+        .meal-plan-section {
+            flex: 1;
+            margin: 0 10px;
+        }
+        .meal-plan-section strong {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .warning-message {
+            color: #FF6347; /* Soft red color */
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>Eat Smarter, Live Stronger</h3>
+        <h5>Find Your Ideal Daily Calorie Intake!</h5>
+        <form>
+            <select id="gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+            <input type="number" id="age" placeholder="Insert your age"/>
+            <input type="number" id="weight" placeholder="Insert your body weight (kg)"/>
+            <input type="number" id="height" placeholder="Insert your height (cm)"/>
+            <button type="button" onclick="calculateBMR()">Calculate</button>
+            <p id="bmrResult"></p>
+            <div id="activenessLevel" style="display: none;">
+                <h5>Select Your Activeness Level</h5>
+                <select id="activeness">
+                    <option value="1.2">Sedentary</option>
+                    <option value="1.55">Moderately Active</option>
+                    <option value="1.725">Very Active</option>
+                </select>
+                <button type="button" onclick="calculateFinalCalories()">Calculate Final Results</button>
+            </div>
+            <p id="finalResult"></p>
+            <p id="warningMessage" class="warning-message"></p>
+            <div id="mealSuggestion" style="display: none;">
+                <h5>Would you like meal suggestions based on your calorie intake?</h5>
+                <button type="button" onclick="showMealSuggestions()">Yes</button>
+            </div>
+            <div id="mealResults" style="display: none;">
+                <h5>Meal Suggestions</h5>
+                <div id="mealPlan" class="meal-plan"></div>
+            </div>
+        </form>
+    </div>
+    <script>
+        let bmr;
+
+        function calculateBMR() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const age = parseFloat(document.getElementById('age').value);
+            const gender = document.getElementById('gender').value;
+
+            if (isNaN(weight) || isNaN(height) || isNaN(age)) {
+                document.getElementById('bmrResult').innerText = 'Please enter valid values for weight, height, and age.';
+                return;
+            }
+
+            if (gender === 'male') {
+                bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+            } else if (gender === 'female') {
+                bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+            }
+
+            document.getElementById('bmrResult').innerHTML = `Your BMR (Basal Metabolic Rate) is approximately ${bmr.toFixed(2)} calories.<br>
+            <span class="fun-fact">Fun Fact: This value shows the amount of calories your body needs for its general survival! <span class="warning">Careful not to eat less than this amount or you might risk body deterioration.</span></span>`;
+            document.getElementById('activenessLevel').style.display = 'block';
+        }
+
+        function calculateFinalCalories() {
+            const activityMultiplier = parseFloat(document.getElementById('activeness').value);
+            const finalCalories = bmr * activityMultiplier;
+            document.getElementById('finalResult').innerText = `Your daily calorie intake should be approximately ${finalCalories.toFixed(2)} calories based on your activeness level.`;
+
+            let warningMessage = '';
+            if (finalCalories <= 1400) {
+                warningMessage = 'This is a very low intake, often unsuitable for most people unless medically advised. May cause fatigue, muscle loss, and nutrient deficiencies. Only suitable for medically supervised diets.';
+            } else if (finalCalories >= 2800) {
+                warningMessage = 'Very high intake, typically for athletes or those with physically demanding jobs. Unmonitored intake may cause rapid fat gain and metabolic issues. Seek guidance if unsure.';
+            }
+
+            document.getElementById('warningMessage').innerText = warningMessage;
+            document.getElementById('mealSuggestion').style.display = 'block';
+        }
+
+        function showMealSuggestions() {
+            const finalCalories = parseFloat(document.getElementById('finalResult').innerText.match(/(\d+\.\d+)/)[0]);
+            let mealPlan = '';
+
+            if (finalCalories <= 1400) {
+                mealPlan = `
+                    <div class="meal-plan-section">
+                        <strong>Breakfast:</strong>
+                        2 boiled eggs<br>
+                        1 slice of bread<br>
+                        ½ serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Lunch:</strong>
+                        100g chicken<br>
+                        100g rice<br>
+                        1 serving of sautéed vegetables<br>
+                        ½ serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Dinner:</strong>
+                        150g fish<br>
+                        100g sweet potatoes<br>
+                        1 glass of low-fat milk
+                    </div>
+                `;
+            } else if (finalCalories >= 2800) {
+                mealPlan = `
+                    <div class="meal-plan-section">
+                        <strong>Breakfast:</strong>
+                        3 boiled eggs<br>
+                        3 slices of bread<br>
+                        1 serving of fruit<br>
+                        10 nuts
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Lunch:</strong>
+                        250g chicken<br>
+                        300g rice<br>
+                        1 serving of sautéed vegetables<br>
+                        1 serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Dinner:</strong>
+                        250g fish<br>
+                        250g sweet potatoes<br>
+                        1 glass of low-fat milk<br>
+                        2 slices of bread
+                    </div>
+                `;
+            } else if (finalCalories >= 1400 && finalCalories < 1600) {
+                mealPlan = `
+                    <div class="meal-plan-section">
+                        <strong>Breakfast:</strong>
+                        2 boiled eggs<br>
+                        2 slices of bread<br>
+                        ½ serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Lunch:</strong>
+                        150g chicken<br>
+                        150g rice<br>
+                        1 serving of sautéed vegetables<br>
+                        ½ serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Dinner:</strong>
+                        150g fish<br>
+                        100g sweet potatoes<br>
+                        1 glass of low-fat milk<br>
+                        10 nuts
+                    </div>
+                `;
+            } else if (finalCalories >= 1600 && finalCalories < 1800) {
+                mealPlan = `
+                    <div class="meal-plan-section">
+                        <strong>Breakfast:</strong>
+                        3 boiled eggs<br>
+                        2 slices of bread<br>
+                        ½ serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Lunch:</strong>
+                        150g chicken<br>
+                        150g rice<br>
+                        1 serving of sautéed vegetables<br>
+                        ½ serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Dinner:</strong>
+                        150g fish<br>
+                        150g sweet potatoes<br>
+                        1 glass of low-fat milk<br>
+                        10 nuts
+                    </div>
+                `;
+            } else if (finalCalories >= 1800 && finalCalories < 2000) {
+                mealPlan = `
+                    <div class="meal-plan-section">
+                        <strong>Breakfast:</strong>
+                        3 boiled eggs<br>
+                        2 slices of bread<br>
+                        ½ serving of fruit<br>
+                        10 nuts
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Lunch:</strong>
+                        150g chicken<br>
+                        200g rice<br>
+                        1 serving of sautéed vegetables<br>
+                        ½ serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Dinner:</strong>
+                        200g fish<br>
+                        150g sweet potatoes<br>
+                        1 glass of low-fat milk<br>
+                        1 slice of bread
+                    </div>
+                `;
+            } else if (finalCalories >= 2000 && finalCalories < 2200) {
+                mealPlan = `
+                    <div class="meal-plan-section">
+                        <strong>Breakfast:</strong>
+                        3 boiled eggs<br>
+                        2 slices of bread<br>
+                        1 serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Lunch:</strong>
+                        200g chicken<br>
+                        200g rice<br>
+                        1 serving of sautéed vegetables<br>
+                        ½ serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Dinner:</strong>
+                        200g fish<br>
+                        200g sweet potatoes<br>
+                        1 glass of low-fat milk<br>
+                        1 slice of bread
+                    </div>
+                `;
+            } else if (finalCalories >= 2200 && finalCalories < 2400) {
+                mealPlan = `
+                    <div class="meal-plan-section">
+                        <strong>Breakfast:</strong>
+                        3 boiled eggs<br>
+                        2 slices of bread<br>
+                        1 serving of fruit<br>
+                        10 nuts
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Lunch:</strong>
+                        200g chicken<br>
+                        250g rice<br>
+                        1 serving of sautéed vegetables<br>
+                        ½ serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Dinner:</strong>
+                        200g fish<br>
+                        200g sweet potatoes<br>
+                        1 glass of low-fat milk<br>
+                        2 slices of bread
+                    </div>
+                `;
+            } else if (finalCalories >= 2400 && finalCalories < 2600) {
+                mealPlan = `
+                    <div class="meal-plan-section">
+                        <strong>Breakfast:</strong>
+                        3 boiled eggs<br>
+                        3 slices of bread<br>
+                        1 serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Lunch:</strong>
+                        250g chicken<br>
+                        250g rice<br>
+                        1 serving of sautéed vegetables<br>
+                        ½ serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Dinner:</strong>
+                        250g fish<br>
+                        200g sweet potatoes<br>
+                        1 glass of low-fat milk<br>
+                        2 slices of bread
+                    </div>
+                `;
+            } else if (finalCalories >= 2600 && finalCalories < 2800) {
+                mealPlan = `
+                    <div class="meal-plan-section">
+                        <strong>Breakfast:</strong>
+                        3 boiled eggs<br>
+                        3 slices of bread<br>
+                        1 serving of fruit<br>
+                        10 nuts
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Lunch:</strong>
+                        250g chicken<br>
+                        250g rice<br>
+                        1 serving of sautéed vegetables<br>
+                        1 serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Dinner:</strong>
+                        250g fish<br>
+                        250g sweet potatoes<br>
+                        1 glass of low-fat milk<br>
+                        2 slices of bread
+                    </div>
+                `;
+            } else if (finalCalories >= 2800) {
+                mealPlan = `
+                    <div class="meal-plan-section">
+                        <strong>Breakfast:</strong>
+                        3 boiled eggs<br>
+                        3 slices of bread<br>
+                        1 serving of fruit<br>
+                        10 nuts
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Lunch:</strong>
+                        250g chicken<br>
+                        300g rice<br>
+                        1 serving of sautéed vegetables<br>
+                        1 serving of fruit
+                    </div>
+                    <div class="meal-plan-section">
+                        <strong>Dinner:</strong>
+                        250g fish<br>
+                        250g sweet potatoes<br>
+                        1 glass of low-fat milk<br>
+                        2 slices of bread
+                    </div>
+                `;
+            }
+
+            document.getElementById('mealPlan').innerHTML = mealPlan;
+            document.getElementById('mealResults').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
