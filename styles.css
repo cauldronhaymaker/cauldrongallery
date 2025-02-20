@@ -13,6 +13,7 @@ body {
     font-family: var(--font-family);
     margin: 0;
     padding: 0;
+    text-align: justify; /* Justify text alignment */
 }
 
 .container {
@@ -27,11 +28,13 @@ body {
 }
 
 h3 {
-    color: var(--primary-color);
+    color: black; /* Change to black */
+    text-align: center; /* Center align headings */
 }
 
 h5 {
-    color: #388E3C; /* Darker green */
+    color: black; /* Change to black */
+    text-align: center; /* Center align headings */
 }
 
 button {
@@ -58,6 +61,7 @@ button:hover {
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 10px;
+    text-align: justify; /* Justify text alignment */
 }
 
 .meal-plan-section strong {
@@ -68,6 +72,7 @@ button:hover {
 .fun-fact {
     font-size: smaller;
     color: black;
+    text-align: justify; /* Justify text alignment */
 }
 
 .warning {
